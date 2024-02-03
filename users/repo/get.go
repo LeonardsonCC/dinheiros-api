@@ -2,10 +2,10 @@ package users_repo
 
 import "github.com/LeonardsonCC/dinheiros/users"
 
-func (r UserRepository) Get(userID int) (users.User, error) {
+func (r UserRepository) Get(email string) (users.User, error) {
 	var u users.User
 
-	err := r.DB.Get(&u, "SELECT * FROM users WHERE user_id = $1", userID)
+	err := r.DB.Get(&u, "SELECT * FROM users WHERE email = $1", email)
 	if err != nil {
 		return users.User{}, err
 	}

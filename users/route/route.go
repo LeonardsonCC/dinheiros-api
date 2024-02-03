@@ -6,6 +6,6 @@ func SetupRoutes(r *gin.Engine) {
 	g := r.Group("/user")
 
 	g.POST("/", CreateUserHandler)
-	g.GET("/:id", GetUserHandler)
+	g.GET("/:email", GetUserHandler)
 	g.GET("/", ListUserHandler)
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"net/http"
 
+	accounts_route "github.com/LeonardsonCC/dinheiros/accounts/route"
 	"github.com/LeonardsonCC/dinheiros/db"
 	users_route "github.com/LeonardsonCC/dinheiros/users/route"
 	"github.com/gin-gonic/gin"
@@ -27,6 +28,7 @@ func main() {
 	})
 
 	users_route.SetupRoutes(r)
+	accounts_route.SetupRoutes(r)
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

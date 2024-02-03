@@ -2,7 +2,6 @@ package users_route
 
 import (
 	"net/http"
-	"strconv"
 
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/rest"
@@ -18,16 +17,11 @@ func GetUserHandler(c *gin.Context) {
 		return
 	}
 
-	userIDStr := c.Params.ByName("id")
-	userID, err := strconv.Atoi(userIDStr)
-	if err != nil {
-		rest.Err(c, "invalid user id", err)
-		return
-	}
+	email := c.Params.ByName("email")
 
 	repo := users_repo.UserRepository{DB: db}
 
-	u, err := repo.Get(userID)
+	u, err := repo.Get(email)
 	if err != nil {
 		rest.Err(c, "failed to get user", err)
 		return
