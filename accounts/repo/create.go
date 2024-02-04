@@ -8,7 +8,7 @@ func (r AccountRepository) Create(u accounts.Account) error {
 		return err
 	}
 
-	_, err = tx.NamedQuery("INSERT INTO accounts (user_id, name) VALUES (:user_id, :name)", u)
+	_, err = tx.NamedExec("INSERT INTO accounts (user_id, name) VALUES (:user_id, :name)", u)
 	if err != nil {
 		return err
 	}
