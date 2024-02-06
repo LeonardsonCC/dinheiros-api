@@ -37,7 +37,7 @@ func CreateAccountHandler(c *gin.Context) {
 
 	err = repo.Create(a)
 	if err != nil {
-		rest.Err(c, "failed to create user", err)
+		rest.Err(c, "failed to create account", err)
 		return
 	}
 
