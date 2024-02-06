@@ -8,4 +8,5 @@ func SetupRoutes(r *gin.Engine) {
 	g.POST("/", CreateAccountHandler)
 	g.GET("/", GetAccountsHandler)
 	g.DELETE("/:id", DeleteAccountHandler)
+	g.PUT("/:id", UpdateAccountHandler)
 }
