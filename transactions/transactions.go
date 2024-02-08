@@ -1,7 +1,6 @@
 package transactions
 
 import (
-	"math"
 	"time"
 )
 
@@ -59,7 +58,7 @@ func MapJsonToDomain(in TransactionJson) (Transaction, error) {
 }
 
 func MapDomainToJson(in Transaction) TransactionJson {
-	value := math.Floor(float64(in.Value) / float64(100))
+	value := float64(in.Value) / float64(100)
 	date := in.Date.Format("2006-01-02")
 
 	var t string

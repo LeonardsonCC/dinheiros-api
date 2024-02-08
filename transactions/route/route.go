@@ -11,4 +11,5 @@ func SetupRoutes(r *gin.Engine) {
 	t.POST("/", CreateTransactionHandler)
 	t.GET("/:id", GetSingleTransactionHandler)
 	t.DELETE("/:id", DeleteTransactionHandler)
+	t.PUT("/:id", UpdateTransactionHandler)
 }
