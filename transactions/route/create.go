@@ -1,6 +1,7 @@
 package transactions_route
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -26,11 +27,15 @@ func CreateTransactionHandler(c *gin.Context) {
 		return
 	}
 
+	var accID int
 	accountIDStr := c.Param("account_id")
-	accountID, err := strconv.Atoi(accountIDStr)
-	if err != nil {
-		rest.Err(c, "invalid account id", err)
-		return
+	if accountIDStr != "" {
+		accountID, err := strconv.Atoi(accountIDStr)
+		if err != nil {
+			rest.Err(c, "invalid account id", err)
+			return
+		}
+		accID = accountID
 	}
 
 	var t transactions.TransactionJson
@@ -46,7 +51,14 @@ func CreateTransactionHandler(c *gin.Context) {
 	}
 
 	tx.UserID = userID
-	tx.AccountID = accountID
+	if accID != 0 {
+		tx.AccountID = accID
+	}
+
+	if tx.AccountID == 0 {
+		rest.Err(c, "transaction without account id", fmt.Errorf("failed to get account id"))
+		return
+	}
 
 	repo := transactions_repo.TransactionsRepository{DB: db}
 

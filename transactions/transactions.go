@@ -25,6 +25,7 @@ type Transaction struct {
 
 type TransactionJson struct {
 	ID          int       `json:"id"`
+	AccountID   int       `json:"account_id"`
 	Description string    `json:"description" binding:"required,max=300"`
 	Value       float64   `json:"value" binding:"required"`
 	Date        string    `json:"date" binding:"required"`
@@ -49,6 +50,7 @@ func MapJsonToDomain(in TransactionJson) (Transaction, error) {
 
 	return Transaction{
 		ID:          in.ID,
+		AccountID:   in.AccountID,
 		Description: in.Description,
 		Value:       value,
 		Date:        date,
@@ -70,6 +72,7 @@ func MapDomainToJson(in Transaction) TransactionJson {
 
 	return TransactionJson{
 		ID:          in.ID,
+		AccountID:   in.AccountID,
 		Description: in.Description,
 		Value:       value,
 		Date:        date,

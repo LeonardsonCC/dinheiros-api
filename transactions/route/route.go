@@ -3,9 +3,12 @@ package transactions_route
 import "github.com/gin-gonic/gin"
 
 func SetupRoutes(r *gin.Engine) {
-	g := r.Group("/account/:account_id/transaction")
+	txGroup := r.Group("/account/:account_id/transactions")
+	txGroup.POST("/", CreateTransactionHandler)
+	txGroup.GET("/", GetTransactionsHandler)
 
-	g.POST("/", CreateTransactionHandler)
-	g.GET("/", GetTransactionsHandler)
-	g.GET("/:id", GetSingleTransactionHandler)
+	t := r.Group("/transaction")
+	t.POST("/", CreateTransactionHandler)
+	t.GET("/:id", GetSingleTransactionHandler)
+	t.DELETE("/:id", DeleteTransactionHandler)
 }
