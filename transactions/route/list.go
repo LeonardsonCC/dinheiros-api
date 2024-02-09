@@ -19,23 +19,21 @@ func GetTransactionsHandler(c *gin.Context) {
 		return
 	}
 
-	// TODO: VALIDATE USER IS THE OWNER OF ACCOUNT
-	// userIDStr := c.GetHeader("user")
-	// userID, err := strconv.Atoi(userIDStr)
-	// if err != nil {
-	// 	rest.Err(c, "invalid user id", err)
-	// }
+	userIDStr := c.GetHeader("user")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		rest.Err(c, "invalid user id", err)
+	}
 
 	accountIDStr := c.Param("account_id")
 	accountID, err := strconv.Atoi(accountIDStr)
 	if err != nil {
-		rest.Err(c, "invalid account id", err)
-		return
+		accountID = 0
 	}
 
 	repo := transactions_repo.TransactionsRepository{DB: db}
 
-	txs, err := repo.List(accountID)
+	txs, err := repo.List(userID, accountID)
 	if err != nil {
 		rest.Err(c, "failed to get addresses", err)
 		return

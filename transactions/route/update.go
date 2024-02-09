@@ -26,17 +26,6 @@ func UpdateTransactionHandler(c *gin.Context) {
 		rest.Err(c, "invalid transaction id id", err)
 	}
 
-	var accID int
-	accountIDStr := c.Param("account_id")
-	if accountIDStr != "" {
-		accountID, err := strconv.Atoi(accountIDStr)
-		if err != nil {
-			rest.Err(c, "invalid account id", err)
-			return
-		}
-		accID = accountID
-	}
-
 	var t transactions.TransactionJson
 	t.ID = transactionID
 
@@ -51,10 +40,6 @@ func UpdateTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	if accID != 0 {
-		tx.AccountID = accID
-	}
-
 	if tx.AccountID == 0 {
 		rest.Err(c, "transaction without account id", fmt.Errorf("failed to get account id"))
 		return
@@ -62,7 +47,7 @@ func UpdateTransactionHandler(c *gin.Context) {
 
 	repo := transactions_repo.TransactionsRepository{DB: db}
 
-	err = repo.Update(accID, tx)
+	err = repo.Update(tx)
 	if err != nil {
 		rest.Err(c, "failed to update transaction", err)
 		return
