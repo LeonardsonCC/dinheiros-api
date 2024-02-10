@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	accounts_route "github.com/LeonardsonCC/dinheiros/accounts/route"
+	categories_route "github.com/LeonardsonCC/dinheiros/categories/route"
 	"github.com/LeonardsonCC/dinheiros/db"
 	transactions_route "github.com/LeonardsonCC/dinheiros/transactions/route"
 	users_route "github.com/LeonardsonCC/dinheiros/users/route"
@@ -28,6 +29,7 @@ func main() {
 	users_route.SetupRoutes(r)
 	accounts_route.SetupRoutes(r)
 	transactions_route.SetupRoutes(r)
+	categories_route.SetupRoutes(r)
 
 	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
