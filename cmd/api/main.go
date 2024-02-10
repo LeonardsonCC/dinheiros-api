@@ -12,10 +12,7 @@ import (
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		panic("error loading .env file")
-	}
+	_ = godotenv.Load()
 
 	// singleton so start here to be used for routes later
 	db.GetConnection()
