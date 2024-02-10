@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/LeonardsonCC/dinheiros/transactions"
@@ -18,6 +19,12 @@ func UpdateTransactionHandler(c *gin.Context) {
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
+	}
+
+	userIDStr := c.GetHeader("user")
+	userID, err := strconv.Atoi(userIDStr)
+	if err != nil {
+		rest.Err(c, "invalid user id", err)
 	}
 
 	transactionIDStr := c.Params.ByName("id")
@@ -46,10 +53,17 @@ func UpdateTransactionHandler(c *gin.Context) {
 	}
 
 	repo := transactions_repo.TransactionsRepository{DB: db}
+	categoriesRepo := categories_repo.CategoriesRepository{DB: db}
 
 	err = repo.Update(tx)
 	if err != nil {
 		rest.Err(c, "failed to update transaction", err)
+		return
+	}
+
+	err = categoriesRepo.Save(userID, transactionID, t.Categories)
+	if err != nil {
+		rest.Err(c, "failed to update categories", err)
 		return
 	}
 

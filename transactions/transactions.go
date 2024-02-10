@@ -2,6 +2,8 @@ package transactions
 
 import (
 	"time"
+
+	"github.com/LeonardsonCC/dinheiros/categories"
 )
 
 type TransactionType int8
@@ -29,6 +31,7 @@ type TransactionJson struct {
 	Value       float64   `json:"value" binding:"required"`
 	Date        string    `json:"date" binding:"required"`
 	Type        string    `json:"type" binding:"required,oneof=INCOME OUTCOME"`
+	Categories  []string  `json:"categories"`
 	CreatedAt   time.Time `json:"created_at"`
 }
 
@@ -57,7 +60,7 @@ func MapJsonToDomain(in TransactionJson) (Transaction, error) {
 	}, nil
 }
 
-func MapDomainToJson(in Transaction) TransactionJson {
+func MapDomainToJson(in Transaction, cats []categories.Category) TransactionJson {
 	value := float64(in.Value) / float64(100)
 	date := in.Date.Format("2006-01-02")
 
@@ -69,6 +72,11 @@ func MapDomainToJson(in Transaction) TransactionJson {
 		t = "OUTCOME"
 	}
 
+	c := make([]string, len(cats))
+	for i, v := range cats {
+		c[i] = v.Name
+	}
+
 	return TransactionJson{
 		ID:          in.ID,
 		AccountID:   in.AccountID,
@@ -76,6 +84,7 @@ func MapDomainToJson(in Transaction) TransactionJson {
 		Value:       value,
 		Date:        date,
 		Type:        t,
+		Categories:  c,
 		CreatedAt:   in.CreatedAt,
 	}
 }

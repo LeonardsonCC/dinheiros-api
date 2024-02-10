@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/LeonardsonCC/dinheiros/transactions"
@@ -32,16 +33,22 @@ func GetTransactionsHandler(c *gin.Context) {
 	}
 
 	repo := transactions_repo.TransactionsRepository{DB: db}
+	categoriesRepo := categories_repo.CategoriesRepository{DB: db}
 
 	txs, err := repo.List(userID, accountID)
 	if err != nil {
 		rest.Err(c, "failed to get addresses", err)
 		return
 	}
+	cats, err := categoriesRepo.GetUserTransactionsCategories(userID)
+	if err != nil {
+		rest.Err(c, "failed to get categories from this transaction", err)
+		return
+	}
 
 	ts := make([]transactions.TransactionJson, len(txs))
 	for i, tx := range txs {
-		ts[i] = transactions.MapDomainToJson(tx)
+		ts[i] = transactions.MapDomainToJson(tx, cats[tx.ID])
 	}
 
 	c.JSON(http.StatusOK, ts)
