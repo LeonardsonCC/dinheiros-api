@@ -28,7 +28,7 @@ func connect() (*sqlx.DB, error) {
 		"postgres",
 		fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=postgres",
 			os.Getenv("DB_USER"),
-			"#pX#%q!V$Uux97/",
+			os.Getenv("DB_PASS"),
 			os.Getenv("DB_HOST"),
 			os.Getenv("DB_PORT"),
 		))
