@@ -27,13 +27,20 @@ CREATE TABLE
       CONSTRAINT fk_account FOREIGN KEY (account_id) REFERENCES accounts (account_id)
   );
 
+CREATE TABLE categories (
+  category_id SERIAL,
+  user_id SERIAL,
+  name VARCHAR (50),
+  PRIMARY KEY (category_id),
+  CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (user_id)
+);
+
 CREATE TABLE
   transaction_category (
-    category_name VARCHAR(50),
+    category_id SERIAL,
     transaction_id SERIAL,
-    user_id SERIAL,
-    PRIMARY KEY (transaction_id, category_name),
+    PRIMARY KEY (transaction_id, category_id),
     CONSTRAINT fk_transaction FOREIGN KEY (transaction_id) REFERENCES transactions (transaction_id),
-    CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (user_id)
+    CONSTRAINT fk_category FOREIGN KEY (category_id) REFERENCES categories (category_id)
   );
 
