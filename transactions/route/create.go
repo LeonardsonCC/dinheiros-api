@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/LeonardsonCC/dinheiros/transactions"
@@ -44,7 +45,7 @@ func CreateTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	tx, err := transactions.MapJsonToDomain(t)
+	tx, cats, err := transactions.MapJsonToDomain(t)
 	if err != nil {
 		rest.Err(c, "transaction invalid 2", err)
 		return
@@ -61,14 +62,21 @@ func CreateTransactionHandler(c *gin.Context) {
 	}
 
 	repo := transactions_repo.TransactionsRepository{DB: db}
+	catRepo := categories_repo.CategoryRepository{DB: db}
 
-	err = repo.Create(tx)
+	transactionID, err := repo.Create(tx)
 	if err != nil {
 		rest.Err(c, "failed to create transaction", err)
 		return
 	}
 
+	err = catRepo.AddCategoryToTransaction(transactionID, cats)
+	if err != nil {
+		rest.Err(c, "failed to add categories", err)
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
-		"message": "transaction created",
+		"message": fmt.Sprintf("created transaction %d", transactionID),
 	})
 }

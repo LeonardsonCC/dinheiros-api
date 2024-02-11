@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/LeonardsonCC/dinheiros/transactions"
@@ -34,6 +35,7 @@ func GetSingleTransactionHandler(c *gin.Context) {
 	}
 
 	repo := transactions_repo.TransactionsRepository{DB: db}
+	catRepo := categories_repo.CategoryRepository{DB: db}
 
 	txs, err := repo.Get(transactionID)
 	if err != nil {
@@ -41,9 +43,15 @@ func GetSingleTransactionHandler(c *gin.Context) {
 		return
 	}
 
+	cats, err := catRepo.GetCategoriesFromTransaction(transactionID)
+	if err != nil {
+		rest.Err(c, "failed to get transactions", err)
+		return
+	}
+
 	ts := make([]transactions.TransactionJson, len(txs))
 	for i, tx := range txs {
-		ts[i] = transactions.MapDomainToJson(tx)
+		ts[i] = transactions.MapDomainToJson(tx, cats)
 	}
 
 	c.JSON(http.StatusOK, ts)

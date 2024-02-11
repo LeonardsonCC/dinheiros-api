@@ -2,6 +2,8 @@ package transactions
 
 import (
 	"time"
+
+	"github.com/LeonardsonCC/dinheiros/categories"
 )
 
 type TransactionType int8
@@ -23,20 +25,21 @@ type Transaction struct {
 }
 
 type TransactionJson struct {
-	ID          int       `json:"id"`
-	AccountID   int       `json:"account_id"`
-	Description string    `json:"description" binding:"required,max=300"`
-	Value       float64   `json:"value" binding:"required"`
-	Date        string    `json:"date" binding:"required"`
-	Type        string    `json:"type" binding:"required,oneof=INCOME OUTCOME"`
-	CreatedAt   time.Time `json:"created_at"`
+	ID          int                       `json:"id"`
+	AccountID   int                       `json:"account_id"`
+	Description string                    `json:"description" binding:"required,max=300"`
+	Value       float64                   `json:"value" binding:"required"`
+	Date        string                    `json:"date" binding:"required"`
+	Type        string                    `json:"type" binding:"required,oneof=INCOME OUTCOME"`
+	Categories  []categories.CategoryJson `json:"categories"`
+	CreatedAt   time.Time                 `json:"created_at"`
 }
 
-func MapJsonToDomain(in TransactionJson) (Transaction, error) {
+func MapJsonToDomain(in TransactionJson) (Transaction, []categories.Category, error) {
 	value := int(in.Value * 100)
 	date, err := time.Parse("02/01/2006", in.Date)
 	if err != nil {
-		return Transaction{}, err
+		return Transaction{}, nil, err
 	}
 
 	t := INCOME
@@ -47,6 +50,14 @@ func MapJsonToDomain(in TransactionJson) (Transaction, error) {
 		t = OUTCOME
 	}
 
+	cats := make([]categories.Category, 0, len(in.Categories))
+	for _, v := range in.Categories {
+		cats = append(cats, categories.Category{
+			ID:   v.ID,
+			Name: v.Name,
+		})
+	}
+
 	return Transaction{
 		ID:          in.ID,
 		AccountID:   in.AccountID,
@@ -54,10 +65,10 @@ func MapJsonToDomain(in TransactionJson) (Transaction, error) {
 		Value:       value,
 		Date:        date,
 		Type:        t,
-	}, nil
+	}, cats, nil
 }
 
-func MapDomainToJson(in Transaction) TransactionJson {
+func MapDomainToJson(in Transaction, cats []categories.Category) TransactionJson {
 	value := float64(in.Value) / float64(100)
 	date := in.Date.Format("2006-01-02")
 
@@ -69,6 +80,14 @@ func MapDomainToJson(in Transaction) TransactionJson {
 		t = "OUTCOME"
 	}
 
+	cs := make([]categories.CategoryJson, 0, len(cats))
+	for _, c := range cats {
+		cs = append(cs, categories.CategoryJson{
+			ID:   c.ID,
+			Name: c.Name,
+		})
+	}
+
 	return TransactionJson{
 		ID:          in.ID,
 		AccountID:   in.AccountID,
@@ -76,6 +95,7 @@ func MapDomainToJson(in Transaction) TransactionJson {
 		Value:       value,
 		Date:        date,
 		Type:        t,
+		Categories:  cs,
 		CreatedAt:   in.CreatedAt,
 	}
 }
