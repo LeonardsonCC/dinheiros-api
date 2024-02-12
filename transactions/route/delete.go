@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
+	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	transactions_repo "github.com/LeonardsonCC/dinheiros/transactions/repo"
@@ -33,6 +34,13 @@ func DeleteTransactionHandler(c *gin.Context) {
 	}
 
 	repo := transactions_repo.TransactionsRepository{DB: db}
+	catRepo := categories_repo.CategoryRepository{DB: db}
+
+	err = catRepo.DeleteByTransaction(transactionID)
+	if err != nil {
+		rest.Err(c, "failed to delete transaction categories", err)
+		return
+	}
 
 	err = repo.Delete(transactionID)
 	if err != nil {
