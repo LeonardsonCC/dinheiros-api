@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/LeonardsonCC/dinheiros/db"
+	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/rest"
-	"github.com/LeonardsonCC/dinheiros/users"
 	users_repo "github.com/LeonardsonCC/dinheiros/users/repo"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -18,7 +18,7 @@ func CreateUserHandler(c *gin.Context) {
 		return
 	}
 
-	var u users.User
+	var u domain.User
 
 	if err := c.ShouldBindJSON(&u); err != nil {
 		rest.Err(c, "user invalid", err)

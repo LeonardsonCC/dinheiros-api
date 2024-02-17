@@ -1,8 +1,8 @@
 package users_repo
 
-import "github.com/LeonardsonCC/dinheiros/users"
+import "github.com/LeonardsonCC/dinheiros/internal/domain"
 
-func (r UserRepository) Create(u users.User) error {
+func (r UserRepository) Create(u domain.User) error {
 	tx, err := r.DB.Beginx()
 	if err != nil {
 		return err

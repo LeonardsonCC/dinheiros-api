@@ -1,11 +1,11 @@
 package categories_repo
 
 import (
-	"github.com/LeonardsonCC/dinheiros/categories"
+	"github.com/LeonardsonCC/dinheiros/internal/domain"
 )
 
-func (c CategoryRepository) GetCategoriesFromTransaction(transactionID int) ([]categories.Category, error) {
-	var cats []categories.Category
+func (c CategoryRepository) GetCategoriesFromTransaction(transactionID int) ([]domain.Category, error) {
+	var cats []domain.Category
 
 	err := c.DB.Select(&cats, "SELECT c.* FROM categories c JOIN transaction_category tc ON (c.category_id = tc.category_id) WHERE tc.transaction_id = $1 ORDER BY category_id", transactionID)
 	if err != nil {
@@ -15,8 +15,8 @@ func (c CategoryRepository) GetCategoriesFromTransaction(transactionID int) ([]c
 	return cats, nil
 }
 
-func (c CategoryRepository) GetCategoriesFromAccount(userID, accountID int) (map[int][]categories.Category, error) {
-	var cats []categories.Category
+func (c CategoryRepository) GetCategoriesFromAccount(userID, accountID int) (map[int][]domain.Category, error) {
+	var cats []domain.Category
 
 	var param int
 	var query string
@@ -34,7 +34,7 @@ func (c CategoryRepository) GetCategoriesFromAccount(userID, accountID int) (map
 		return nil, err
 	}
 
-	cs := make(map[int][]categories.Category)
+	cs := make(map[int][]domain.Category)
 	for _, v := range cats {
 		cs[v.TransactionID] = append(cs[v.TransactionID], v)
 	}

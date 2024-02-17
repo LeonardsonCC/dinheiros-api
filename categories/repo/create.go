@@ -1,10 +1,8 @@
 package categories_repo
 
-import (
-	"github.com/LeonardsonCC/dinheiros/categories"
-)
+import "github.com/LeonardsonCC/dinheiros/internal/domain"
 
-func (c CategoryRepository) Create(cat categories.Category) error {
+func (c CategoryRepository) Create(cat domain.Category) error {
 	tx, err := c.DB.Beginx()
 	if err != nil {
 		return err

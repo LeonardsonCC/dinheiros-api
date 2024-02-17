@@ -1,10 +1,8 @@
 package categories_repo
 
-import (
-	"github.com/LeonardsonCC/dinheiros/categories"
-)
+import "github.com/LeonardsonCC/dinheiros/internal/domain"
 
-func (c CategoryRepository) AddCategoryToTransaction(transactionID int, cats []categories.Category) error {
+func (c CategoryRepository) AddCategoryToTransaction(transactionID int, cats []domain.Category) error {
 	tx, err := c.DB.Beginx()
 	if err != nil {
 		return err
@@ -19,9 +17,9 @@ func (c CategoryRepository) AddCategoryToTransaction(transactionID int, cats []c
 		return nil
 	}
 
-	tcs := make([]categories.TransactionCategory, 0, len(cats))
+	tcs := make([]domain.TransactionCategory, 0, len(cats))
 	for _, cc := range cats {
-		tcs = append(tcs, categories.TransactionCategory{
+		tcs = append(tcs, domain.TransactionCategory{
 			TransactionID: transactionID,
 			CategoryID:    cc.ID,
 		})

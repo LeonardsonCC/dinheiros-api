@@ -1,4 +1,4 @@
-package categories
+package domain
 
 type Category struct {
 	ID            int    `db:"category_id" json:"id"`

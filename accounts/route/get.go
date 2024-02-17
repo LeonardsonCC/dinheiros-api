@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/LeonardsonCC/dinheiros/accounts"
 	accounts_repo "github.com/LeonardsonCC/dinheiros/accounts/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
+	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -34,7 +34,7 @@ func GetAccountsHandler(c *gin.Context) {
 	}
 
 	if accs == nil {
-		accs = []accounts.Account{}
+		accs = []domain.Account{}
 	}
 
 	c.JSON(http.StatusOK, accs)

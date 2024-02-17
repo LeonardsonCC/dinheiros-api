@@ -6,8 +6,8 @@ import (
 
 	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
+	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/rest"
-	"github.com/LeonardsonCC/dinheiros/transactions"
 	transactions_repo "github.com/LeonardsonCC/dinheiros/transactions/repo"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -49,9 +49,9 @@ func GetSingleTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	ts := make([]transactions.TransactionJson, len(txs))
+	ts := make([]domain.TransactionJson, len(txs))
 	for i, tx := range txs {
-		ts[i] = transactions.MapDomainToJson(tx, cats)
+		ts[i] = domain.MapDomainToJson(tx, cats)
 	}
 
 	c.JSON(http.StatusOK, ts)

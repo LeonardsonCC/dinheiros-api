@@ -1,10 +1,8 @@
 package transactions_repo
 
-import (
-	"github.com/LeonardsonCC/dinheiros/transactions"
-)
+import "github.com/LeonardsonCC/dinheiros/internal/domain"
 
-func (r TransactionsRepository) Create(t transactions.Transaction) (int, error) {
+func (r TransactionsRepository) Create(t domain.Transaction) (int, error) {
 	tx, err := r.DB.Beginx()
 	if err != nil {
 		return 0, err

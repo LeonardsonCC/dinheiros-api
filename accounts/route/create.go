@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/LeonardsonCC/dinheiros/accounts"
 	accounts_repo "github.com/LeonardsonCC/dinheiros/accounts/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
+	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -25,7 +25,7 @@ func CreateAccountHandler(c *gin.Context) {
 		rest.Err(c, "invalid user id", err)
 	}
 
-	var a accounts.Account
+	var a domain.Account
 	a.UserID = userID
 
 	if err := c.ShouldBindJSON(&a); err != nil {

@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/LeonardsonCC/dinheiros/categories"
 	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
+	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -32,7 +32,7 @@ func UpdateCategoryHandler(c *gin.Context) {
 		rest.Err(c, "invalid account id id", err)
 	}
 
-	var cat categories.Category
+	var cat domain.Category
 	if err := c.ShouldBindJSON(&cat); err != nil {
 		rest.Err(c, "category invalid", err)
 		return

@@ -7,8 +7,8 @@ import (
 
 	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
+	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/rest"
-	"github.com/LeonardsonCC/dinheiros/transactions"
 	transactions_repo "github.com/LeonardsonCC/dinheiros/transactions/repo"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -39,13 +39,13 @@ func CreateTransactionHandler(c *gin.Context) {
 		accID = accountID
 	}
 
-	var t transactions.TransactionJson
+	var t domain.TransactionJson
 	if err := c.ShouldBindJSON(&t); err != nil {
 		rest.Err(c, "transaction invalid", err)
 		return
 	}
 
-	tx, cats, err := transactions.MapJsonToDomain(t)
+	tx, cats, err := domain.MapJsonToDomain(t)
 	if err != nil {
 		rest.Err(c, "transaction invalid 2", err)
 		return

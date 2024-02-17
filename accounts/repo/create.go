@@ -1,8 +1,8 @@
 package accounts_repo
 
-import "github.com/LeonardsonCC/dinheiros/accounts"
+import "github.com/LeonardsonCC/dinheiros/internal/domain"
 
-func (r AccountRepository) Create(u accounts.Account) error {
+func (r AccountRepository) Create(u domain.Account) error {
 	tx, err := r.DB.Beginx()
 	if err != nil {
 		return err

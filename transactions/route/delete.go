@@ -19,13 +19,6 @@ func DeleteTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	// TODO: validate user id
-	// userIDStr := c.GetHeader("user")
-	// userID, err := strconv.Atoi(userIDStr)
-	// if err != nil {
-	// 	rest.Err(c, "invalid user id", err)
-	// }
-
 	transactionIDStr := c.Param("id")
 	transactionID, err := strconv.Atoi(transactionIDStr)
 	if err != nil {

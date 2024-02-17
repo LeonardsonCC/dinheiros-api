@@ -1,10 +1,10 @@
 package categories_repo
 
 import (
-	"github.com/LeonardsonCC/dinheiros/categories"
+	"github.com/LeonardsonCC/dinheiros/internal/domain"
 )
 
-func (c CategoryRepository) Update(cat categories.Category) error {
+func (c CategoryRepository) Update(cat domain.Category) error {
 	tx, err := c.DB.Beginx()
 	if err != nil {
 		return err

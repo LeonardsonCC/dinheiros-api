@@ -1,9 +1,9 @@
 package transactions_repo
 
-import "github.com/LeonardsonCC/dinheiros/transactions"
+import "github.com/LeonardsonCC/dinheiros/internal/domain"
 
-func (r TransactionsRepository) List(userID, accountID int) ([]transactions.Transaction, error) {
-	var t []transactions.Transaction
+func (r TransactionsRepository) List(userID, accountID int) ([]domain.Transaction, error) {
+	var t []domain.Transaction
 
 	query := "SELECT t.* FROM transactions t JOIN accounts a ON (a.account_id = t.account_id) WHERE a.user_id = $1"
 	if accountID != 0 {

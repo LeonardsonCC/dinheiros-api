@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/LeonardsonCC/dinheiros/categories"
 	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
+	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -35,7 +35,7 @@ func GetCategoryHandler(c *gin.Context) {
 	}
 
 	if len(cats) == 0 {
-		cats = []categories.Category{}
+		cats = []domain.Category{}
 	}
 
 	c.JSON(http.StatusOK, cats)
