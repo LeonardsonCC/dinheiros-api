@@ -5,8 +5,8 @@ import (
 
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
+	"github.com/LeonardsonCC/dinheiros/internal/repository"
 	"github.com/LeonardsonCC/dinheiros/rest"
-	users_repo "github.com/LeonardsonCC/dinheiros/users/repo"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -25,7 +25,7 @@ func CreateUserHandler(c *gin.Context) {
 		return
 	}
 
-	repo := users_repo.UserRepository{DB: db}
+	repo := repository.UserRepository{DB: db}
 
 	err = repo.Create(u)
 	if err != nil {

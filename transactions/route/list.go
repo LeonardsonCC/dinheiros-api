@@ -4,11 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
+	"github.com/LeonardsonCC/dinheiros/internal/repository"
 	"github.com/LeonardsonCC/dinheiros/rest"
-	transactions_repo "github.com/LeonardsonCC/dinheiros/transactions/repo"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -32,8 +31,8 @@ func GetTransactionsHandler(c *gin.Context) {
 		accountID = 0
 	}
 
-	repo := transactions_repo.TransactionsRepository{DB: db}
-	repoCats := categories_repo.CategoryRepository{DB: db}
+	repo := repository.TransactionsRepository{DB: db}
+	repoCats := repository.CategoryRepository{DB: db}
 
 	txs, err := repo.List(userID, accountID)
 	if err != nil {

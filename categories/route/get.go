@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
+	"github.com/LeonardsonCC/dinheiros/internal/repository"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -26,7 +26,7 @@ func GetCategoryHandler(c *gin.Context) {
 		return
 	}
 
-	repo := categories_repo.CategoryRepository{DB: db}
+	repo := repository.CategoryRepository{DB: db}
 
 	cats, err := repo.Get(categoryID)
 	if err != nil {

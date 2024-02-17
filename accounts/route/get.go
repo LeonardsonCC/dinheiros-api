@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	accounts_repo "github.com/LeonardsonCC/dinheiros/accounts/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
+	"github.com/LeonardsonCC/dinheiros/internal/repository"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -25,7 +25,7 @@ func GetAccountsHandler(c *gin.Context) {
 		rest.Err(c, "invalid user id", err)
 	}
 
-	repo := accounts_repo.AccountRepository{DB: db}
+	repo := repository.AccountRepository{DB: db}
 
 	accs, err := repo.Get(userID)
 	if err != nil {

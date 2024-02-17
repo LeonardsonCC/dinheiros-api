@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/LeonardsonCC/dinheiros/db"
+	"github.com/LeonardsonCC/dinheiros/internal/repository"
 	"github.com/LeonardsonCC/dinheiros/rest"
-	users_repo "github.com/LeonardsonCC/dinheiros/users/repo"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -17,7 +17,7 @@ func ListUserHandler(c *gin.Context) {
 		return
 	}
 
-	repo := users_repo.UserRepository{DB: db}
+	repo := repository.UserRepository{DB: db}
 
 	users, err := repo.List()
 	if err != nil {

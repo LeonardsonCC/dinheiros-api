@@ -4,8 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
-	accounts_repo "github.com/LeonardsonCC/dinheiros/accounts/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
+	"github.com/LeonardsonCC/dinheiros/internal/repository"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -30,7 +30,7 @@ func DeleteAccountHandler(c *gin.Context) {
 		rest.Err(c, "invalid account id id", err)
 	}
 
-	repo := accounts_repo.AccountRepository{DB: db}
+	repo := repository.AccountRepository{DB: db}
 
 	err = repo.Delete(userID, accountID)
 	if err != nil {

@@ -4,11 +4,10 @@ import (
 	"net/http"
 	"strconv"
 
-	categories_repo "github.com/LeonardsonCC/dinheiros/categories/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
+	"github.com/LeonardsonCC/dinheiros/internal/repository"
 	"github.com/LeonardsonCC/dinheiros/rest"
-	transactions_repo "github.com/LeonardsonCC/dinheiros/transactions/repo"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
 )
@@ -34,8 +33,8 @@ func GetSingleTransactionHandler(c *gin.Context) {
 		return
 	}
 
-	repo := transactions_repo.TransactionsRepository{DB: db}
-	catRepo := categories_repo.CategoryRepository{DB: db}
+	repo := repository.TransactionsRepository{DB: db}
+	catRepo := repository.CategoryRepository{DB: db}
 
 	txs, err := repo.Get(transactionID)
 	if err != nil {

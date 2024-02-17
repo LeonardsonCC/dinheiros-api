@@ -4,9 +4,9 @@ import (
 	"net/http"
 	"strconv"
 
-	accounts_repo "github.com/LeonardsonCC/dinheiros/accounts/repo"
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
+	"github.com/LeonardsonCC/dinheiros/internal/repository"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
@@ -33,7 +33,7 @@ func CreateAccountHandler(c *gin.Context) {
 		return
 	}
 
-	repo := accounts_repo.AccountRepository{DB: db}
+	repo := repository.AccountRepository{DB: db}
 
 	err = repo.Create(a)
 	if err != nil {
