@@ -3,20 +3,21 @@ package main
 import (
 	"net/http"
 
-	accounts_route "github.com/LeonardsonCC/dinheiros/accounts/route"
-	categories_route "github.com/LeonardsonCC/dinheiros/categories/route"
 	"github.com/LeonardsonCC/dinheiros/db"
-	transactions_route "github.com/LeonardsonCC/dinheiros/transactions/route"
-	users_route "github.com/LeonardsonCC/dinheiros/users/route"
+	"github.com/LeonardsonCC/dinheiros/internal/handler"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
+	_ "github.com/lib/pq"
 )
 
 func main() {
 	_ = godotenv.Load()
 
 	// singleton so start here to be used for routes later
-	db.GetConnection()
+	_, err := db.GetConnection()
+	if err != nil {
+		panic(err)
+	}
 
 	r := gin.Default()
 
@@ -26,10 +27,12 @@ func main() {
 		})
 	})
 
-	users_route.SetupRoutes(r)
-	accounts_route.SetupRoutes(r)
-	transactions_route.SetupRoutes(r)
-	categories_route.SetupRoutes(r)
+	for _, route := range handler.Routes {
+		route(r)
+	}
 
-	r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	err = r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	if err != nil {
+		panic(err)
+	}
 }
