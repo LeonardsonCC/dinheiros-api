@@ -4,3 +4,34 @@ services:
     build: .
     ports:
       - "8080:8080"
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - app
+
+  db:
+    container_name: dinheiros-db
+    image: postgres:16.2-alpine3.19
+    volumes:
+      - ./.docker/postgres:/data/postgres
+      - ./db.sql:/docker-entrypoint-initdb.d/db.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - app
+       
+volumes:   
+     postgres:
+
+networks:
+  app:
+    driver: bridge

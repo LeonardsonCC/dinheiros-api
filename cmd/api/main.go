@@ -7,7 +7,6 @@ import (
 	"github.com/LeonardsonCC/dinheiros/internal/handler"
 	"github.com/gin-gonic/gin"
 	"github.com/joho/godotenv"
-	_ "github.com/lib/pq"
 )
 
 func main() {
