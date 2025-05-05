@@ -2,6 +2,7 @@ package db
 
 import (
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/jmoiron/sqlx"
@@ -9,6 +10,13 @@ import (
 )
 
 var db *sqlx.DB
+
+var (
+	dbUser = getEnvOrPanic("DB_USER")
+	dbPass = getEnvOrPanic("DB_PASS")
+	dbHost = getEnvOrPanic("DB_HOST")
+	dbPort = getEnvOrPanic("DB_PORT")
+)
 
 func GetConnection() (*sqlx.DB, error) {
 	if db != nil {
@@ -38,4 +46,13 @@ func connect() (*sqlx.DB, error) {
 	}
 
 	return db, nil
+}
+
+func getEnvOrPanic(key string) string {
+	if val := os.Getenv(key); val != "" {
+		return val
+	}
+
+	log.Fatalf("failed to get env: [%s]", key)
+	return ""
 }

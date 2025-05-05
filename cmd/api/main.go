@@ -6,12 +6,9 @@ import (
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/handler"
 	"github.com/gin-gonic/gin"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	_ = godotenv.Load()
-
 	// singleton so start here to be used for routes later
 	_, err := db.GetConnection()
 	if err != nil {
@@ -30,7 +27,8 @@ func main() {
 		route(r)
 	}
 
-	err = r.Run() // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
+	err = r.Run()
 	if err != nil {
 		panic(err)
 	}
