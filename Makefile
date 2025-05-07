@@ -1,5 +1,8 @@
 up:
-	docker compose up -d
+	docker compose --profile all up -d
+
+up-app:
+	docker compose --profile app up -d
 
 down:
 	docker compose down
