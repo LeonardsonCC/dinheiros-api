@@ -1,9 +1,13 @@
 services:
   api:
     container_name: dinheiros-api
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
     env_file:
       - .env
+    volumes:
+      - .:/app
     ports:
       - "8080:8080"
     depends_on:
