@@ -34,8 +34,8 @@ services:
       POSTGRES_PASSWORD: postgres
     networks:
       - app
-       
-volumes:   
+
+volumes:
      postgres:
 
 networks:
