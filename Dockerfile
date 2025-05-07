@@ -1,11 +1,21 @@
-FROM golang:1.22-alpine3.19
+FROM golang:1.23-alpine AS build
 
-WORKDIR /src
+WORKDIR /app
+
+COPY go.mod ./
+COPY go.sum ./
+RUN go mod download
 
 COPY . .
 
-RUN go mod download
+RUN CGO_ENABLED=0 GOOS=linux go build -o app-bin ./cmd/api
 
-RUN go build -o dinheiros ./cmd/api/
+FROM alpine:3.20
 
-CMD [ "/src/dinheiros" ]
+WORKDIR /app
+
+COPY --from=build /app/app-bin .
+
+RUN apk --no-cache add ca-certificates tzdata
+
+CMD ["/app/app-bin"]
