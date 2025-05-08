@@ -10,6 +10,7 @@ CREATE TABLE
     account_id SERIAL PRIMARY KEY,
     user_id SERIAL NOT NULL,
     name VARCHAR(150) NOT NULL,
+    color CHAR(7) NOT NULL,
     created_at TIMESTAMP NOT NULL DEFAULT current_timestamp,
     CONSTRAINT fk_user FOREIGN KEY (user_id) REFERENCES users (user_id)
   );

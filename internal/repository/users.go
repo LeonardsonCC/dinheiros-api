@@ -39,7 +39,7 @@ func (r UserRepository) Get(ctx context.Context, email string) (domain.User, err
 }
 
 func (r UserRepository) Create(ctx context.Context, u domain.User) error {
-	ctx, sp := telemetry.GetAppTracer().Start(ctx, "repository insert")
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, "repository user")
 	defer sp.End()
 
 	tx, err := r.DB.Beginx()

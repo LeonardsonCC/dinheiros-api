@@ -1,0 +1,7 @@
+POST {{url}}/account/
+user: 1
+
+{
+	"name": "Account Test {{newUuid}}",
+	"color": "#111111"
+}

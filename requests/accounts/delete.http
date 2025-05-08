@@ -1,0 +1,2 @@
+DELETE {{url}}/account/{{account_id}}
+user: 1

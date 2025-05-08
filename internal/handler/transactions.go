@@ -194,13 +194,13 @@ func GetTransactionsHandler(c *gin.Context) {
 
 	txs, err := repo.List(userID, accountID)
 	if err != nil {
-		rest.Err(c, "failed to get addresses", err)
+		rest.Err(c, "failed to get accounts", err)
 		return
 	}
 
 	cats, err := repoCats.GetCategoriesFromAccount(userID, accountID)
 	if err != nil {
-		rest.Err(c, "failed to get addresses", err)
+		rest.Err(c, "failed to get accounts", err)
 		return
 	}
 

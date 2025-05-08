@@ -1,0 +1,7 @@
+PUT {{url}}/account/{{account_id}}
+user: 1
+
+{
+	"name": "Account Test {{newUuid}}",
+	"color": "#222222"
+}

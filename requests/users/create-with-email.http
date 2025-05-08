@@ -1,0 +1,4 @@
+POST {{url}}/user/
+{
+	"email": "{{email}}"
+}

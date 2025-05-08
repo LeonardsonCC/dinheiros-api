@@ -1,0 +1,2 @@
+GET {{url}}/account/
+user: 1
