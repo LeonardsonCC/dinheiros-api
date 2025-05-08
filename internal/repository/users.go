@@ -2,6 +2,8 @@ package repository
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 
 	"github.com/jmoiron/sqlx"
 
@@ -33,6 +35,9 @@ func (r UserRepository) Get(ctx context.Context, email string) (domain.User, err
 
 	err := r.DB.GetContext(ctx, &u, "SELECT * FROM users WHERE email = $1", email)
 	if err != nil {
+		if errors.Is(err, sql.ErrNoRows) {
+			return domain.User{}, nil
+		}
 		return domain.User{}, err
 	}
 

@@ -61,7 +61,7 @@ services:
     networks:
       - app
     profiles:
-      # - all
+      - all
       - otel
 
   otel-lgtm:

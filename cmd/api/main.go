@@ -14,6 +14,7 @@ import (
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/handler"
 	"github.com/LeonardsonCC/dinheiros/internal/logger"
+	"github.com/LeonardsonCC/dinheiros/internal/profiling"
 	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
 )
 
@@ -28,6 +29,11 @@ func run() error {
 	// Handle SIGINT (CTRL+C) gracefully.
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
+
+	err := profiling.SetupPyroscope()
+	if err != nil {
+		return err
+	}
 
 	// Set up OpenTelemetry.
 	otelShutdown, err := telemetry.SetupOTelSDK(ctx)

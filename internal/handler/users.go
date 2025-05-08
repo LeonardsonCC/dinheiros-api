@@ -7,6 +7,7 @@ import (
 
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
+	"github.com/LeonardsonCC/dinheiros/internal/logger"
 	"github.com/LeonardsonCC/dinheiros/internal/repository"
 	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
 	"github.com/LeonardsonCC/dinheiros/internal/telemetry/spans"
@@ -21,12 +22,15 @@ func UsersRoutes(r *gin.Engine) {
 }
 
 func createUserHandler(c *gin.Context) {
+	logger := logger.FromContext(c.Request.Context())
+
 	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.UserHandler)
 	defer sp.End()
 
 	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
+		logger.Err(err).Msg("failed to connect to database")
 		return
 	}
 
@@ -34,6 +38,7 @@ func createUserHandler(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&u); err != nil {
 		rest.Err(c, "user invalid", err)
+		logger.Err(err).Msg("user invalid")
 		return
 	}
 
@@ -42,6 +47,7 @@ func createUserHandler(c *gin.Context) {
 	err = repo.Create(ctx, u)
 	if err != nil {
 		rest.Err(c, "failed to create user", err)
+		logger.Err(err).Msg("failed to create user")
 		return
 	}
 
@@ -52,12 +58,15 @@ func createUserHandler(c *gin.Context) {
 }
 
 func getUserHandler(c *gin.Context) {
+	logger := logger.FromContext(c.Request.Context())
+
 	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.UserHandler)
 	defer sp.End()
 
 	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
+		logger.Err(err).Msg("failed to connect to database")
 		return
 	}
 
@@ -68,6 +77,7 @@ func getUserHandler(c *gin.Context) {
 	u, err := repo.Get(ctx, email)
 	if err != nil {
 		rest.Err(c, "failed to get user", err)
+		logger.Err(err).Msg("failed to get user")
 		return
 	}
 

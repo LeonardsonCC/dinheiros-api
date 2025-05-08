@@ -9,6 +9,9 @@ up-app:
 down:
 	docker compose --profile all down
 
+restart-api:
+	docker compose restart api
+
 tail-api:
 	docker compose logs api -f --since=5m
 
