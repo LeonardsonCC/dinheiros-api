@@ -68,7 +68,6 @@ func run() error {
 }
 
 func setupServer(ctx context.Context) *gin.Engine {
-	log.Info().Msg("TEST")
 	// service
 	_, err := db.GetConnection(ctx)
 	if err != nil {
