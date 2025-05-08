@@ -21,7 +21,7 @@ func CategoriesRoutes(r *gin.Engine) {
 }
 
 func CreateCategoryHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -55,7 +55,7 @@ func CreateCategoryHandler(c *gin.Context) {
 }
 
 func DeleteCategoryHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -82,7 +82,7 @@ func DeleteCategoryHandler(c *gin.Context) {
 }
 
 func GetCategoryHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -111,7 +111,7 @@ func GetCategoryHandler(c *gin.Context) {
 }
 
 func ListCategoriesHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -139,7 +139,7 @@ func ListCategoriesHandler(c *gin.Context) {
 }
 
 func UpdateCategoryHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return

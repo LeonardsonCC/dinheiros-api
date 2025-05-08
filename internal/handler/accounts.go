@@ -21,7 +21,7 @@ func AccountsRoutes(r *gin.Engine) {
 }
 
 func CreateAccountHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -55,7 +55,7 @@ func CreateAccountHandler(c *gin.Context) {
 }
 
 func GetAccountsHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -83,7 +83,7 @@ func GetAccountsHandler(c *gin.Context) {
 }
 
 func DeleteAccountHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -115,7 +115,7 @@ func DeleteAccountHandler(c *gin.Context) {
 }
 
 func UpdateAccountHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return

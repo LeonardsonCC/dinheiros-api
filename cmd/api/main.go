@@ -17,7 +17,6 @@ import (
 )
 
 func main() {
-	println("starting server...")
 	if err := run(); err != nil {
 		log.Fatal(err)
 	}
@@ -38,24 +37,7 @@ func run() error {
 		err = errors.Join(err, otelShutdown(context.Background()))
 	}()
 
-	// service
-	_, err = db.GetConnection()
-	if err != nil {
-		panic(err)
-	}
-
-	r := gin.Default()
-
-	r.Use(otelgin.Middleware("dinheiros-api"))
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
-
-	for _, route := range handler.Routes {
-		route(r)
-	}
+	r := setupServer(ctx)
 
 	srvErr := make(chan error, 1)
 	go func() {
@@ -75,4 +57,27 @@ func run() error {
 
 	// When Shutdown is called, ListenAndServe immediately returns ErrServerClosed.
 	return nil
+}
+
+func setupServer(ctx context.Context) *gin.Engine {
+	// service
+	_, err := db.GetConnection(ctx)
+	if err != nil {
+		panic(err)
+	}
+
+	r := gin.Default()
+
+	r.Use(otelgin.Middleware("dinheiros-api"))
+	r.GET("/ping", func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "pong",
+		})
+	})
+
+	for _, route := range handler.Routes {
+		route(r)
+	}
+
+	return r
 }

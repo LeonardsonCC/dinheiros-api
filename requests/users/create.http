@@ -1,0 +1,4 @@
+POST {{url}}/user/
+{
+	"email": "test_{{newUuid}}@test.com"
+}

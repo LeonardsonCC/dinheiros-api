@@ -1,12 +1,15 @@
 package db
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 
 	"github.com/jmoiron/sqlx"
 	_ "github.com/lib/pq"
+	"github.com/uptrace/opentelemetry-go-extra/otelsql"
+	"github.com/uptrace/opentelemetry-go-extra/otelsqlx"
 )
 
 var db *sqlx.DB
@@ -18,12 +21,12 @@ var (
 	dbPort = getEnvOrPanic("DB_PORT")
 )
 
-func GetConnection() (*sqlx.DB, error) {
+func GetConnection(ctx context.Context) (*sqlx.DB, error) {
 	if db != nil {
 		return db, nil
 	}
 
-	d, err := connect()
+	d, err := connect(ctx)
 	if err != nil {
 		return nil, err
 	}
@@ -32,15 +35,23 @@ func GetConnection() (*sqlx.DB, error) {
 	return db, nil
 }
 
-func connect() (*sqlx.DB, error) {
-	db, err := sqlx.Connect(
+func connect(ctx context.Context) (*sqlx.DB, error) {
+	db, err := otelsqlx.ConnectContext(
+		ctx,
 		"postgres",
 		fmt.Sprintf("user=%s password=%s host=%s port=%s dbname=postgres sslmode=disable",
-			os.Getenv("DB_USER"),
-			os.Getenv("DB_PASS"),
-			os.Getenv("DB_HOST"),
-			os.Getenv("DB_PORT"),
-		))
+			dbUser,
+			dbPass,
+			dbHost,
+			dbPort,
+		),
+		otelsql.WithDBName("dinheiros-postgres"),
+		otelsql.WithDBSystem("postgres"))
+	if err != nil {
+		return nil, err
+	}
+
+	err = db.PingContext(ctx)
 	if err != nil {
 		return nil, err
 	}

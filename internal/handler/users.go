@@ -3,22 +3,27 @@ package handler
 import (
 	"net/http"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/internal/repository"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
 	"github.com/LeonardsonCC/dinheiros/rest"
-	"github.com/gin-gonic/gin"
 )
 
 func UsersRoutes(r *gin.Engine) {
 	g := r.Group("/user")
 
-	g.POST("/", CreateUserHandler)
-	g.GET("/:email", GetUserHandler)
+	g.POST("/", createUserHandler)
+	g.GET("/:email", getUserHandler)
 }
 
-func CreateUserHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+func createUserHandler(c *gin.Context) {
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), "handler user")
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -33,7 +38,7 @@ func CreateUserHandler(c *gin.Context) {
 
 	repo := repository.UserRepository{DB: db}
 
-	err = repo.Create(u)
+	err = repo.Create(ctx, u)
 	if err != nil {
 		rest.Err(c, "failed to create user", err)
 		return
@@ -45,8 +50,11 @@ func CreateUserHandler(c *gin.Context) {
 	})
 }
 
-func GetUserHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+func getUserHandler(c *gin.Context) {
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), "handler user")
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -56,7 +64,7 @@ func GetUserHandler(c *gin.Context) {
 
 	repo := repository.UserRepository{DB: db}
 
-	u, err := repo.Get(email)
+	u, err := repo.Get(ctx, email)
 	if err != nil {
 		rest.Err(c, "failed to get user", err)
 		return

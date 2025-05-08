@@ -1,8 +1,12 @@
 package repository
 
 import (
-	"github.com/LeonardsonCC/dinheiros/internal/domain"
+	"context"
+
 	"github.com/jmoiron/sqlx"
+
+	"github.com/LeonardsonCC/dinheiros/internal/domain"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
 )
 
 type UserRepository struct {
@@ -20,10 +24,13 @@ func (r UserRepository) List() ([]domain.User, error) {
 	return u, nil
 }
 
-func (r UserRepository) Get(email string) (domain.User, error) {
+func (r UserRepository) Get(ctx context.Context, email string) (domain.User, error) {
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, "repository user")
+	defer sp.End()
+
 	var u domain.User
 
-	err := r.DB.Get(&u, "SELECT * FROM users WHERE email = $1", email)
+	err := r.DB.GetContext(ctx, &u, "SELECT * FROM users WHERE email = $1", email)
 	if err != nil {
 		return domain.User{}, err
 	}
@@ -31,13 +38,16 @@ func (r UserRepository) Get(email string) (domain.User, error) {
 	return u, nil
 }
 
-func (r UserRepository) Create(u domain.User) error {
+func (r UserRepository) Create(ctx context.Context, u domain.User) error {
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, "repository insert")
+	defer sp.End()
+
 	tx, err := r.DB.Beginx()
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.NamedQuery("INSERT INTO users (email) VALUES (:email)", u)
+	_, err = tx.QueryxContext(ctx, "INSERT INTO users (email) VALUES ($1)", u.Email)
 	if err != nil {
 		return err
 	}

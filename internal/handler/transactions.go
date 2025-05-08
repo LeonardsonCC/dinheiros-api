@@ -26,7 +26,7 @@ func TransactionsRoutes(r *gin.Engine) {
 }
 
 func CreateTransactionHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -93,7 +93,7 @@ func CreateTransactionHandler(c *gin.Context) {
 }
 
 func DeleteTransactionHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -127,7 +127,7 @@ func DeleteTransactionHandler(c *gin.Context) {
 }
 
 func GetSingleTransactionHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -171,7 +171,7 @@ func GetSingleTransactionHandler(c *gin.Context) {
 }
 
 func GetTransactionsHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -213,7 +213,7 @@ func GetTransactionsHandler(c *gin.Context) {
 }
 
 func UpdateTransactionHandler(c *gin.Context) {
-	db, err := db.GetConnection()
+	db, err := db.GetConnection(c.Request.Context())
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
