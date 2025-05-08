@@ -1,7 +1,11 @@
 package repository
 
 import (
+	"context"
+
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry/spans"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -9,10 +13,13 @@ type CategoryRepository struct {
 	DB *sqlx.DB
 }
 
-func (c CategoryRepository) Get(categoryID int) ([]domain.Category, error) {
+func (c CategoryRepository) Get(ctx context.Context, categoryID int) ([]domain.Category, error) {
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.CategoryRepository)
+	defer sp.End()
+
 	var cats []domain.Category
 
-	err := c.DB.Select(&cats, "SELECT * FROM categories WHERE category_id = $1 ORDER BY category_id", categoryID)
+	err := c.DB.SelectContext(ctx, &cats, "SELECT * FROM categories WHERE category_id = $1 ORDER BY category_id", categoryID)
 	if err != nil {
 		return cats, err
 	}
@@ -20,10 +27,10 @@ func (c CategoryRepository) Get(categoryID int) ([]domain.Category, error) {
 	return cats, nil
 }
 
-func (c CategoryRepository) GetCategoriesFromTransaction(transactionID int) ([]domain.Category, error) {
+func (c CategoryRepository) GetCategoriesFromTransaction(ctx context.Context, transactionID int) ([]domain.Category, error) {
 	var cats []domain.Category
 
-	err := c.DB.Select(&cats, "SELECT c.* FROM categories c JOIN transaction_category tc ON (c.category_id = tc.category_id) WHERE tc.transaction_id = $1 ORDER BY category_id", transactionID)
+	err := c.DB.SelectContext(ctx, &cats, "SELECT c.* FROM categories c JOIN transaction_category tc ON (c.category_id = tc.category_id) WHERE tc.transaction_id = $1 ORDER BY category_id", transactionID)
 	if err != nil {
 		return cats, err
 	}
@@ -31,7 +38,10 @@ func (c CategoryRepository) GetCategoriesFromTransaction(transactionID int) ([]d
 	return cats, nil
 }
 
-func (c CategoryRepository) GetCategoriesFromAccount(userID, accountID int) (map[int][]domain.Category, error) {
+func (c CategoryRepository) GetCategoriesFromAccount(ctx context.Context, userID, accountID int) (map[int][]domain.Category, error) {
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, "repository transaction")
+	defer sp.End()
+
 	var cats []domain.Category
 
 	var param int
@@ -45,7 +55,7 @@ func (c CategoryRepository) GetCategoriesFromAccount(userID, accountID int) (map
 		param = accountID
 	}
 
-	err := c.DB.Select(&cats, query, param)
+	err := c.DB.SelectContext(ctx, &cats, query, param)
 	if err != nil {
 		return nil, err
 	}
@@ -58,10 +68,13 @@ func (c CategoryRepository) GetCategoriesFromAccount(userID, accountID int) (map
 	return cs, nil
 }
 
-func (c CategoryRepository) ListByUser(userID int) ([]domain.Category, error) {
+func (c CategoryRepository) ListByUser(ctx context.Context, userID int) ([]domain.Category, error) {
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.CategoryRepository)
+	defer sp.End()
+
 	var cats []domain.Category
 
-	err := c.DB.Select(&cats, "SELECT * FROM categories WHERE user_id = $1 ORDER BY category_id", userID)
+	err := c.DB.SelectContext(ctx, &cats, "SELECT * FROM categories WHERE user_id = $1 ORDER BY category_id", userID)
 	if err != nil {
 		return cats, err
 	}
@@ -69,9 +82,11 @@ func (c CategoryRepository) ListByUser(userID int) ([]domain.Category, error) {
 	return cats, nil
 }
 
-func (c CategoryRepository) Delete(categoryID int) error {
-	_, err := c.DB.Exec("DELETE FROM categories WHERE category_id = $1", categoryID)
+func (c CategoryRepository) Delete(ctx context.Context, categoryID int) error {
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.CategoryRepository)
+	defer sp.End()
 
+	_, err := c.DB.ExecContext(ctx, "DELETE FROM categories WHERE category_id = $1", categoryID)
 	if err != nil {
 		return err
 	}
@@ -79,9 +94,8 @@ func (c CategoryRepository) Delete(categoryID int) error {
 	return nil
 }
 
-func (c CategoryRepository) DeleteByTransaction(transactionID int) error {
-	_, err := c.DB.Exec("DELETE FROM transaction_category WHERE transaction_id = $1", transactionID)
-
+func (c CategoryRepository) DeleteByTransaction(ctx context.Context, transactionID int) error {
+	_, err := c.DB.ExecContext(ctx, "DELETE FROM transaction_category WHERE transaction_id = $1", transactionID)
 	if err != nil {
 		return err
 	}
@@ -89,13 +103,21 @@ func (c CategoryRepository) DeleteByTransaction(transactionID int) error {
 	return nil
 }
 
-func (c CategoryRepository) Create(cat domain.Category) error {
+func (c CategoryRepository) Create(ctx context.Context, cat domain.Category) error {
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.CategoryRepository)
+	defer sp.End()
+
 	tx, err := c.DB.Beginx()
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.NamedExec("INSERT INTO categories (user_id, name) VALUES (:user_id, :name)", cat)
+	query, err := tx.PrepareNamedContext(ctx, "INSERT INTO categories (user_id, name) VALUES (:user_id, :name)")
+	if err != nil {
+		return err
+	}
+
+	_, err = query.ExecContext(ctx, cat)
 	if err != nil {
 		return err
 	}
@@ -108,13 +130,21 @@ func (c CategoryRepository) Create(cat domain.Category) error {
 	return nil
 }
 
-func (c CategoryRepository) Update(cat domain.Category) error {
+func (c CategoryRepository) Update(ctx context.Context, cat domain.Category) error {
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.CategoryRepository)
+	defer sp.End()
+
 	tx, err := c.DB.Beginx()
 	if err != nil {
 		return err
 	}
 
-	_, err = tx.NamedExec("UPDATE categories SET name = :name WHERE category_id = :category_id", cat)
+	query, err := tx.PrepareNamedContext(ctx, "UPDATE categories SET name = :name WHERE category_id = :category_id")
+	if err != nil {
+		return err
+	}
+
+	_, err = query.ExecContext(ctx, cat)
 	if err != nil {
 		return err
 	}
@@ -127,13 +157,16 @@ func (c CategoryRepository) Update(cat domain.Category) error {
 	return nil
 }
 
-func (c CategoryRepository) AddCategoryToTransaction(transactionID int, cats []domain.Category) error {
+func (c CategoryRepository) AddCategoryToTransaction(ctx context.Context, transactionID int, cats []domain.Category) error {
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.CategoryRepository)
+	defer sp.End()
+
 	tx, err := c.DB.Beginx()
 	if err != nil {
 		return err
 	}
 
-	err = c.deleteAllCategoriesFromTransaction(transactionID)
+	err = c.deleteAllCategoriesFromTransaction(ctx, transactionID)
 	if err != nil {
 		return err
 	}
@@ -150,7 +183,12 @@ func (c CategoryRepository) AddCategoryToTransaction(transactionID int, cats []d
 		})
 	}
 
-	_, err = tx.NamedExec("INSERT INTO transaction_category (category_id, transaction_id) VALUES (:category_id, :transaction_id)", tcs)
+	query, err := tx.PrepareNamedContext(ctx, "INSERT INTO transaction_category (category_id, transaction_id) VALUES (:category_id, :transaction_id)")
+	if err != nil {
+		return err
+	}
+
+	_, err = query.ExecContext(ctx, tcs)
 	if err != nil {
 		return err
 	}
@@ -163,8 +201,11 @@ func (c CategoryRepository) AddCategoryToTransaction(transactionID int, cats []d
 	return nil
 }
 
-func (c CategoryRepository) deleteAllCategoriesFromTransaction(transactionID int) error {
-	_, err := c.DB.Exec("DELETE FROM transaction_category WHERE transaction_id = $1", transactionID)
+func (c CategoryRepository) deleteAllCategoriesFromTransaction(ctx context.Context, transactionID int) error {
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.CategoryRepository)
+	defer sp.End()
+
+	_, err := c.DB.ExecContext(ctx, "DELETE FROM transaction_category WHERE transaction_id = $1", transactionID)
 
 	return err
 }

@@ -8,6 +8,8 @@ import (
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/internal/repository"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry/spans"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/gin-gonic/gin"
 )
@@ -26,7 +28,10 @@ func TransactionsRoutes(r *gin.Engine) {
 }
 
 func CreateTransactionHandler(c *gin.Context) {
-	db, err := db.GetConnection(c.Request.Context())
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.TransactionHandler)
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -75,13 +80,13 @@ func CreateTransactionHandler(c *gin.Context) {
 	repo := repository.TransactionsRepository{DB: db}
 	catRepo := repository.CategoryRepository{DB: db}
 
-	transactionID, err := repo.Create(tx)
+	transactionID, err := repo.Create(ctx, tx)
 	if err != nil {
 		rest.Err(c, "failed to create transaction", err)
 		return
 	}
 
-	err = catRepo.AddCategoryToTransaction(transactionID, cats)
+	err = catRepo.AddCategoryToTransaction(ctx, transactionID, cats)
 	if err != nil {
 		rest.Err(c, "failed to add categories", err)
 		return
@@ -93,7 +98,10 @@ func CreateTransactionHandler(c *gin.Context) {
 }
 
 func DeleteTransactionHandler(c *gin.Context) {
-	db, err := db.GetConnection(c.Request.Context())
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.TransactionHandler)
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -109,13 +117,13 @@ func DeleteTransactionHandler(c *gin.Context) {
 	repo := repository.TransactionsRepository{DB: db}
 	catRepo := repository.CategoryRepository{DB: db}
 
-	err = catRepo.DeleteByTransaction(transactionID)
+	err = catRepo.DeleteByTransaction(ctx, transactionID)
 	if err != nil {
 		rest.Err(c, "failed to delete transaction categories", err)
 		return
 	}
 
-	err = repo.Delete(transactionID)
+	err = repo.Delete(ctx, transactionID)
 	if err != nil {
 		rest.Err(c, "failed to delete transaction", err)
 		return
@@ -127,7 +135,10 @@ func DeleteTransactionHandler(c *gin.Context) {
 }
 
 func GetSingleTransactionHandler(c *gin.Context) {
-	db, err := db.GetConnection(c.Request.Context())
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.TransactionHandler)
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -150,13 +161,13 @@ func GetSingleTransactionHandler(c *gin.Context) {
 	repo := repository.TransactionsRepository{DB: db}
 	catRepo := repository.CategoryRepository{DB: db}
 
-	txs, err := repo.Get(transactionID)
+	txs, err := repo.Get(ctx, transactionID)
 	if err != nil {
 		rest.Err(c, "failed to get transactions", err)
 		return
 	}
 
-	cats, err := catRepo.GetCategoriesFromTransaction(transactionID)
+	cats, err := catRepo.GetCategoriesFromTransaction(ctx, transactionID)
 	if err != nil {
 		rest.Err(c, "failed to get transactions", err)
 		return
@@ -171,7 +182,10 @@ func GetSingleTransactionHandler(c *gin.Context) {
 }
 
 func GetTransactionsHandler(c *gin.Context) {
-	db, err := db.GetConnection(c.Request.Context())
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.TransactionHandler)
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -192,13 +206,13 @@ func GetTransactionsHandler(c *gin.Context) {
 	repo := repository.TransactionsRepository{DB: db}
 	repoCats := repository.CategoryRepository{DB: db}
 
-	txs, err := repo.List(userID, accountID)
+	txs, err := repo.List(ctx, userID, accountID)
 	if err != nil {
 		rest.Err(c, "failed to get accounts", err)
 		return
 	}
 
-	cats, err := repoCats.GetCategoriesFromAccount(userID, accountID)
+	cats, err := repoCats.GetCategoriesFromAccount(ctx, userID, accountID)
 	if err != nil {
 		rest.Err(c, "failed to get accounts", err)
 		return
@@ -213,7 +227,10 @@ func GetTransactionsHandler(c *gin.Context) {
 }
 
 func UpdateTransactionHandler(c *gin.Context) {
-	db, err := db.GetConnection(c.Request.Context())
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.TransactionHandler)
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -247,13 +264,13 @@ func UpdateTransactionHandler(c *gin.Context) {
 	repo := repository.TransactionsRepository{DB: db}
 	repoCats := repository.CategoryRepository{DB: db}
 
-	err = repo.Update(tx)
+	err = repo.Update(ctx, tx)
 	if err != nil {
 		rest.Err(c, "failed to update transaction", err)
 		return
 	}
 
-	err = repoCats.AddCategoryToTransaction(tx.ID, cats)
+	err = repoCats.AddCategoryToTransaction(ctx, tx.ID, cats)
 	if err != nil {
 		rest.Err(c, "failed to update categories", err)
 		return

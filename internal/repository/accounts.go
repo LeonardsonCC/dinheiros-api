@@ -5,6 +5,7 @@ import (
 
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry/spans"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -13,7 +14,7 @@ type AccountRepository struct {
 }
 
 func (r AccountRepository) Get(ctx context.Context, userID int) ([]domain.Account, error) {
-	ctx, sp := telemetry.GetAppTracer().Start(ctx, "repository account")
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.AccountRepository)
 	defer sp.End()
 
 	var a []domain.Account
@@ -27,7 +28,7 @@ func (r AccountRepository) Get(ctx context.Context, userID int) ([]domain.Accoun
 }
 
 func (r AccountRepository) Delete(ctx context.Context, userID, accountID int) error {
-	ctx, sp := telemetry.GetAppTracer().Start(ctx, "repository account")
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.AccountRepository)
 	defer sp.End()
 
 	_, err := r.DB.ExecContext(ctx, "DELETE FROM accounts WHERE user_id = $1 AND account_id = $2", userID, accountID)
@@ -39,7 +40,7 @@ func (r AccountRepository) Delete(ctx context.Context, userID, accountID int) er
 }
 
 func (r AccountRepository) Create(ctx context.Context, u domain.Account) error {
-	ctx, sp := telemetry.GetAppTracer().Start(ctx, "repository account")
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.AccountRepository)
 	defer sp.End()
 
 	tx, err := r.DB.Beginx()

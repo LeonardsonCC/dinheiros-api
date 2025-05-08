@@ -9,6 +9,7 @@ import (
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/internal/repository"
 	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry/spans"
 	"github.com/LeonardsonCC/dinheiros/rest"
 )
 
@@ -20,7 +21,7 @@ func UsersRoutes(r *gin.Engine) {
 }
 
 func createUserHandler(c *gin.Context) {
-	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), "handler user")
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.UserHandler)
 	defer sp.End()
 
 	db, err := db.GetConnection(ctx)
@@ -51,7 +52,7 @@ func createUserHandler(c *gin.Context) {
 }
 
 func getUserHandler(c *gin.Context) {
-	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), "handler user")
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.UserHandler)
 	defer sp.End()
 
 	db, err := db.GetConnection(ctx)

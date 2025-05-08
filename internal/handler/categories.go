@@ -7,6 +7,8 @@ import (
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/internal/repository"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry/spans"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/gin-gonic/gin"
 )
@@ -21,7 +23,10 @@ func CategoriesRoutes(r *gin.Engine) {
 }
 
 func CreateCategoryHandler(c *gin.Context) {
-	db, err := db.GetConnection(c.Request.Context())
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.CategoryHandler)
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -43,7 +48,7 @@ func CreateCategoryHandler(c *gin.Context) {
 
 	repo := repository.CategoryRepository{DB: db}
 
-	err = repo.Create(cat)
+	err = repo.Create(ctx, cat)
 	if err != nil {
 		rest.Err(c, "failed to create category", err)
 		return
@@ -55,7 +60,10 @@ func CreateCategoryHandler(c *gin.Context) {
 }
 
 func DeleteCategoryHandler(c *gin.Context) {
-	db, err := db.GetConnection(c.Request.Context())
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.CategoryHandler)
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -70,7 +78,7 @@ func DeleteCategoryHandler(c *gin.Context) {
 
 	repo := repository.CategoryRepository{DB: db}
 
-	err = repo.Delete(categoryID)
+	err = repo.Delete(ctx, categoryID)
 	if err != nil {
 		rest.Err(c, "failed to delte category", err)
 		return
@@ -82,7 +90,10 @@ func DeleteCategoryHandler(c *gin.Context) {
 }
 
 func GetCategoryHandler(c *gin.Context) {
-	db, err := db.GetConnection(c.Request.Context())
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.CategoryHandler)
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -97,7 +108,7 @@ func GetCategoryHandler(c *gin.Context) {
 
 	repo := repository.CategoryRepository{DB: db}
 
-	cats, err := repo.Get(categoryID)
+	cats, err := repo.Get(ctx, categoryID)
 	if err != nil {
 		rest.Err(c, "failed to get category", err)
 		return
@@ -111,7 +122,10 @@ func GetCategoryHandler(c *gin.Context) {
 }
 
 func ListCategoriesHandler(c *gin.Context) {
-	db, err := db.GetConnection(c.Request.Context())
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.CategoryHandler)
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -125,7 +139,7 @@ func ListCategoriesHandler(c *gin.Context) {
 
 	repo := repository.CategoryRepository{DB: db}
 
-	cats, err := repo.ListByUser(userID)
+	cats, err := repo.ListByUser(ctx, userID)
 	if err != nil {
 		rest.Err(c, "failed to get categories", err)
 		return
@@ -139,7 +153,10 @@ func ListCategoriesHandler(c *gin.Context) {
 }
 
 func UpdateCategoryHandler(c *gin.Context) {
-	db, err := db.GetConnection(c.Request.Context())
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.CategoryHandler)
+	defer sp.End()
+
+	db, err := db.GetConnection(ctx)
 	if err != nil {
 		rest.Err(c, "failed to connect to database", err)
 		return
@@ -168,7 +185,7 @@ func UpdateCategoryHandler(c *gin.Context) {
 
 	repo := repository.CategoryRepository{DB: db}
 
-	err = repo.Update(cat)
+	err = repo.Update(ctx, cat)
 	if err != nil {
 		rest.Err(c, "failed to update category", err)
 		return

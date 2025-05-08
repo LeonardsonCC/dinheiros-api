@@ -7,6 +7,7 @@ import (
 
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry/spans"
 )
 
 type UserRepository struct {
@@ -25,7 +26,7 @@ func (r UserRepository) List() ([]domain.User, error) {
 }
 
 func (r UserRepository) Get(ctx context.Context, email string) (domain.User, error) {
-	ctx, sp := telemetry.GetAppTracer().Start(ctx, "repository user")
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.UserRepository)
 	defer sp.End()
 
 	var u domain.User
@@ -39,7 +40,7 @@ func (r UserRepository) Get(ctx context.Context, email string) (domain.User, err
 }
 
 func (r UserRepository) Create(ctx context.Context, u domain.User) error {
-	ctx, sp := telemetry.GetAppTracer().Start(ctx, "repository user")
+	ctx, sp := telemetry.GetAppTracer().Start(ctx, spans.UserRepository)
 	defer sp.End()
 
 	tx, err := r.DB.Beginx()

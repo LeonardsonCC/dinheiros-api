@@ -8,6 +8,7 @@ import (
 	"github.com/LeonardsonCC/dinheiros/internal/domain"
 	"github.com/LeonardsonCC/dinheiros/internal/repository"
 	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
+	"github.com/LeonardsonCC/dinheiros/internal/telemetry/spans"
 	"github.com/LeonardsonCC/dinheiros/rest"
 	"github.com/gin-gonic/gin"
 )
@@ -22,7 +23,7 @@ func AccountsRoutes(r *gin.Engine) {
 }
 
 func CreateAccountHandler(c *gin.Context) {
-	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), "handler accounts")
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.AccountHandler)
 	defer sp.End()
 
 	db, err := db.GetConnection(ctx)
@@ -60,7 +61,7 @@ func CreateAccountHandler(c *gin.Context) {
 }
 
 func GetAccountsHandler(c *gin.Context) {
-	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), "handler accounts")
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.AccountHandler)
 	defer sp.End()
 
 	db, err := db.GetConnection(ctx)
@@ -92,7 +93,7 @@ func GetAccountsHandler(c *gin.Context) {
 }
 
 func DeleteAccountHandler(c *gin.Context) {
-	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), "handler accounts")
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.AccountHandler)
 	defer sp.End()
 
 	db, err := db.GetConnection(ctx)
@@ -128,7 +129,7 @@ func DeleteAccountHandler(c *gin.Context) {
 }
 
 func UpdateAccountHandler(c *gin.Context) {
-	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), "handler accounts")
+	ctx, sp := telemetry.GetAppTracer().Start(c.Request.Context(), spans.AccountHandler)
 	defer sp.End()
 
 	db, err := db.GetConnection(ctx)
