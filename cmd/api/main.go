@@ -3,22 +3,24 @@ package main
 import (
 	"context"
 	"errors"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 
 	"github.com/gin-gonic/gin"
+	"github.com/rs/zerolog/log"
 	"go.opentelemetry.io/contrib/instrumentation/github.com/gin-gonic/gin/otelgin"
 
 	"github.com/LeonardsonCC/dinheiros/db"
 	"github.com/LeonardsonCC/dinheiros/internal/handler"
+	"github.com/LeonardsonCC/dinheiros/internal/logger"
 	"github.com/LeonardsonCC/dinheiros/internal/telemetry"
 )
 
 func main() {
 	if err := run(); err != nil {
-		log.Fatal(err)
+		log.Error().Err(err)
+		os.Exit(1)
 	}
 }
 
@@ -60,15 +62,19 @@ func run() error {
 }
 
 func setupServer(ctx context.Context) *gin.Engine {
+	log.Info().Msg("TEST")
 	// service
 	_, err := db.GetConnection(ctx)
 	if err != nil {
 		panic(err)
 	}
 
+	gin.SetMode(gin.ReleaseMode)
 	r := gin.Default()
 
 	r.Use(otelgin.Middleware("dinheiros-api"))
+	r.Use(logger.Middleware())
+
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
