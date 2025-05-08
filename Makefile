@@ -7,7 +7,7 @@ up-app:
 	docker compose --profile app up -d
 
 down:
-	docker compose down
+	docker compose --profile all down
 
 tail-api:
 	docker compose logs api -f --since=5m

@@ -15,6 +15,10 @@ services:
         condition: service_healthy
     networks:
       - app
+    labels:
+      # zerolog don't support send to loki
+      # using promtail to get from container
+      logging: "promtail"
     profiles:
       - all
       - app
@@ -41,8 +45,9 @@ services:
       - all
       - app
 
-  # Telemetry stuff
+  # Telemetry
   blackbox:
+    # used for healthcheck application
     # https://github.com/prometheus/blackbox_exporter/releases
     image: prom/blackbox-exporter:v0.26.0
     container_name: blackbox
@@ -52,21 +57,23 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - ./blackbox.yml:/etc/blackbox/blackbox.yml
-    command: m--config.file=/etc/blackbox/blackbox.yml
+    command: --config.file=/etc/blackbox/blackbox.yml
     networks:
       - app
     profiles:
-      - all
+      # - all
       - otel
 
   otel-lgtm:
+    # whole grafana stack <3
     # https://github.com/grafetryana/docker-otel-lgtm/releases
     image: grafana/otel-lgtm:0.11.1
     container_name: otel-lgtm
     ports:
       - 3000:3000
       - 4317:4317
-      # - 4318:4318
+      # loki port (so promtail can send logs)
+      - "3100:3100"
     depends_on:
       blackbox:
         condition: "service_started"
@@ -74,8 +81,25 @@ services:
     volumes:
       - ./prometheus.yml:/otel-lgtm/prometheus.yaml
       - .docker/grafana/provisioning:/otel-lgtm/grafana/conf/provisioning
+      - .docker/grafana-data:/data
     networks:
       - app
+    profiles:
+      - all
+      - otel
+
+  promtail:
+    # get logs from containers
+    image: grafana/promtail:3.2.1
+    volumes:
+      - ./promtail-config.yml:/etc/promtail/config.yml
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /var/lib/docker/containers:/var/lib/docker/containers:ro
+    networks:
+      - app
+    depends_on:
+      - otel-lgtm
+      - api
     profiles:
       - all
       - otel
