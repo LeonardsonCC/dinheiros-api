@@ -30,20 +30,24 @@ func run() error {
 	ctx, stop := signal.NotifyContext(context.Background(), os.Interrupt)
 	defer stop()
 
-	err := profiling.SetupPyroscope()
-	if err != nil {
-		return err
+	if enableProfiling := os.Getenv("ENABLE_PROFILING"); enableProfiling == "1" {
+		err := profiling.SetupPyroscope()
+		if err != nil {
+			return err
+		}
 	}
 
-	// Set up OpenTelemetry.
-	otelShutdown, err := telemetry.SetupOTelSDK(ctx)
-	if err != nil {
-		return err
+	if enableTelemetry := os.Getenv("ENABLE_TELEMETRY"); enableTelemetry == "1" {
+		// Set up OpenTelemetry.
+		otelShutdown, err := telemetry.SetupOTelSDK(ctx)
+		if err != nil {
+			return err
+		}
+		// Handle shutdown properly so nothing leaks.
+		defer func() {
+			err = errors.Join(err, otelShutdown(context.Background()))
+		}()
 	}
-	// Handle shutdown properly so nothing leaks.
-	defer func() {
-		err = errors.Join(err, otelShutdown(context.Background()))
-	}()
 
 	r := setupServer(ctx)
 
@@ -54,7 +58,7 @@ func run() error {
 
 	// Wait for interruption.
 	select {
-	case err = <-srvErr:
+	case err := <-srvErr:
 		// Error when starting HTTP server.
 		return err
 	case <-ctx.Done():
