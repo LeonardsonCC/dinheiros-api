@@ -3,6 +3,7 @@ package telemetry
 import (
 	"context"
 	"errors"
+	"os"
 	"time"
 
 	"go.opentelemetry.io/otel"
@@ -80,7 +81,7 @@ func newPropagator() propagation.TextMapPropagator {
 }
 
 func newTracerProvider(ctx context.Context) (*trace.TracerProvider, error) {
-	traceExporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithEndpoint("otel-lgtm:4317"), otlptracegrpc.WithInsecure())
+	traceExporter, err := otlptracegrpc.New(ctx, otlptracegrpc.WithEndpoint(os.Getenv("OTEL_TRACER")), otlptracegrpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
@@ -94,7 +95,7 @@ func newTracerProvider(ctx context.Context) (*trace.TracerProvider, error) {
 }
 
 func newMeterProvider(ctx context.Context) (*metric.MeterProvider, error) {
-	metricExporter, err := otlpmetricgrpc.New(ctx, otlpmetricgrpc.WithEndpoint("otel-lgtm:4317"), otlpmetricgrpc.WithInsecure())
+	metricExporter, err := otlpmetricgrpc.New(ctx, otlpmetricgrpc.WithEndpoint(os.Getenv("OTEL_METRIC")), otlpmetricgrpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}
@@ -108,7 +109,7 @@ func newMeterProvider(ctx context.Context) (*metric.MeterProvider, error) {
 }
 
 func newLoggerProvider(ctx context.Context) (*log.LoggerProvider, error) {
-	logExporter, err := otlploggrpc.New(ctx, otlploggrpc.WithEndpoint("otel-lgtm:4317"), otlploggrpc.WithInsecure())
+	logExporter, err := otlploggrpc.New(ctx, otlploggrpc.WithEndpoint(os.Getenv("OTEL_LOGGER")), otlploggrpc.WithInsecure())
 	if err != nil {
 		return nil, err
 	}

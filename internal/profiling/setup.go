@@ -1,13 +1,17 @@
 package profiling
 
-import "github.com/grafana/pyroscope-go"
+import (
+	"os"
+
+	"github.com/grafana/pyroscope-go"
+)
 
 func SetupPyroscope() error {
 	_, err := pyroscope.Start(pyroscope.Config{
 		ApplicationName: "dinheiros-api",
 
 		// replace this with the address of pyroscope server
-		ServerAddress: "http://otel-lgtm:4040",
+		ServerAddress: os.Getenv("GRAFANA_PYROSCOPE"),
 
 		// you can disable logging by setting this to nil
 		Logger: pyroscope.StandardLogger,
